@@ -32,7 +32,7 @@
 - Go's `crypto/ed25519` accepts a signature made without any private
   key for a small-order public key: for the identity point
   `01 00 .. 00`, `R = 01 00 .. 00` and `S = 0` verify for every message.
-  kolo-id v0.1.3 `Verify` rejects these keys, and kolo-secure also rejects
+  kolo-id `Verify` rejects these keys, and kolo-secure also rejects
   the 14 encodings that Go decodes to one of the 8 small-order points, by
   comparing bytes, before it verifies anything. The list was derived with
   an independent Edwards25519 implementation (not a dependency), and a

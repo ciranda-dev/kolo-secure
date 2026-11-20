@@ -7,7 +7,7 @@ the peer it dials from wherever it learned the address.
 
 ## API
 
-From v0.1.1, kolo-secure is IPv4 only and IPv6 input, the v4-mapped
+kolo-secure is IPv4 only and IPv6 input, the v4-mapped
 form included, is refused.
 
 - `Listen(ctx, addr, id, cfg) (*Listener, error)` opens a kolo-transport
