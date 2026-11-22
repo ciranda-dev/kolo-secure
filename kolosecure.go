@@ -48,7 +48,7 @@ func Listen(ctx context.Context, addr string, id *koloid.Identity, cfg *Config) 
 	if err != nil {
 		return nil, wrapInvalid(err)
 	}
-	return newListener(tl, id, c), nil
+	return newListener(tl, id, c)
 }
 
 // NewListener authenticates the connections of tl as id; it owns tl and closes it, also when it fails.
@@ -71,10 +71,14 @@ func NewListener(tl *kolotransport.Listener, id *koloid.Identity, cfg *Config) (
 	if c.Transport != nil {
 		return fail(fmt.Errorf("%w: Transport must be nil for NewListener", ErrInvalidConfig))
 	}
-	return newListener(tl, id, c), nil
+	return newListener(tl, id, c)
 }
 
-func newListener(tl *kolotransport.Listener, id *koloid.Identity, c Config) *Listener {
+func newListener(tl *kolotransport.Listener, id *koloid.Identity, c Config) (*Listener, error) {
+	if err := c.limitPending(tl.MaxConns()); err != nil {
+		tl.Close()
+		return nil, err
+	}
 	lctx, cancel := context.WithCancel(context.Background())
 	l := &Listener{
 		tl:      tl,
@@ -88,7 +92,7 @@ func newListener(tl *kolotransport.Listener, id *koloid.Identity, c Config) *Lis
 	}
 	l.wg.Add(1)
 	go l.loop()
-	return l
+	return l, nil
 }
 
 func (l *Listener) loop() {

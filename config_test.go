@@ -14,7 +14,7 @@ func TestConfigDefaults(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if c.HandshakeTimeout != 10*time.Second || c.MaxPending != 64 || c.Transport != nil {
+		if c.HandshakeTimeout != 10*time.Second || c.MaxPending != 0 || c.Transport != nil {
 			t.Fatalf("defaults: %+v", c)
 		}
 	}
@@ -34,11 +34,43 @@ func TestConfigRejectsOutOfRange(t *testing.T) {
 		{HandshakeTimeout: time.Minute + 1},
 		{HandshakeTimeout: -1},
 		{MaxPending: -1},
-		{MaxPending: 1001},
 	} {
 		if _, err := cfg.withDefaults(); !errors.Is(err, ErrInvalidConfig) {
 			t.Errorf("%+v: got %v", cfg, err)
 		}
+	}
+}
+
+func TestMaxPendingFollowsMaxConns(t *testing.T) {
+	checkGoroutines(t)
+	id := newIdentity(t)
+	if n := cap(listen(t, id, nil).slots); n != 64 {
+		t.Fatalf("default: %d", n)
+	}
+	tc := func(conns int) *kolotransport.Config {
+		return &kolotransport.Config{MaxConns: conns, MaxConnReceiveWindow: 64 << 10, MaxMemory: 1 << 30}
+	}
+	if n := cap(listen(t, id, &Config{Transport: tc(5)}).slots); n != 5 {
+		t.Fatalf("default with MaxConns 5: %d", n)
+	}
+	if n := cap(listen(t, id, &Config{Transport: tc(5000), MaxPending: 2000}).slots); n != 2000 {
+		t.Fatalf("2000 of 5000: %d", n)
+	}
+	if n := cap(listen(t, id, &Config{Transport: tc(5), MaxPending: 5}).slots); n != 5 {
+		t.Fatalf("5 of 5: %d", n)
+	}
+	if _, err := Listen(testCtx(t), "127.0.0.1:0", id, &Config{Transport: tc(5), MaxPending: 6}); !errors.Is(err, ErrInvalidConfig) {
+		t.Fatalf("Listen with MaxPending above MaxConns: %v", err)
+	}
+	tl, err := kolotransport.Listen(testCtx(t), "127.0.0.1:0", tc(5))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := NewListener(tl, id, &Config{MaxPending: 6}); !errors.Is(err, ErrInvalidConfig) {
+		t.Fatalf("NewListener with MaxPending above MaxConns: %v", err)
+	}
+	if _, err := tl.Accept(testCtx(t)); !errors.Is(err, kolotransport.ErrClosed) {
+		t.Fatalf("transport listener not closed: %v", err)
 	}
 }
 
