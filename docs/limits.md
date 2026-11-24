@@ -11,7 +11,7 @@ Every option, default and bound of kolo-secure, with the reason for it. A value 
 |---|---|---|---|
 | `Transport` (passed to kolo-transport) | nil (its defaults) | see kolo-transport | Passed through unchanged, so `WindowGrowth` and its options work as kolo-transport documents them; `Conn.AllowWindowGrowth` marks a connection you trust. |
 | `HandshakeTimeout` (kolo-secure handshake, after the QUIC handshake) | 10s | 1s to 60s | Security: it bounds how long a peer that finished QUIC can hold a `MaxPending` slot without authenticating. |
-| `MaxPending` (per listener: handshaking or waiting for `Accept`) | 64 | 1 to 1000 | Memory and security: it limits what peers that finish QUIC and then stall, or an application that stops calling `Accept`, can hold. kolo-transport `MaxConns` (100 by default) also counts these connections. |
+| `MaxPending` (per listener: handshaking or waiting for `Accept`) | 64, or the transport `MaxConns` if lower | 1 to the transport `MaxConns` (100 by default) | Memory and security: it limits what peers that finish QUIC and then stall, or an application that stops calling `Accept`, can hold. kolo-transport `MaxConns` also counts these connections, so a larger value would never be reached; `Listen` and `NewListener` return `ErrInvalidConfig` for it. There is no other maximum: raise the transport `MaxConns` (and `MaxMemory`) with it. |
 | handshake message size | 256 bytes | fixed | Memory: every kolo-secure message has a fixed size of at most 98 bytes (`TestWireFormat`), so a larger cap would only let a peer make the reader allocate more before the message is rejected. |
 
 When `MaxPending` connections are pending, the listener closes each new
