@@ -318,6 +318,15 @@ func (c *Conn) AllowWindowGrowth() bool { return c.tc.AllowWindowGrowth() }
 // It is cheap, never blocks, is safe from any goroutine and is the zero value once the connection has ended.
 func (c *Conn) Stats() kolotransport.ConnStats { return c.tc.Stats() }
 
+// SupportsDatagrams reports whether both ends set Config.Transport.Datagrams, as kolotransport.Conn.SupportsDatagrams.
+func (c *Conn) SupportsDatagrams() bool { return c.tc.SupportsDatagrams() }
+
+// SendDatagram queues p as one QUIC datagram and never blocks, as kolotransport.Conn.SendDatagram.
+func (c *Conn) SendDatagram(p []byte) error { return c.tc.SendDatagram(p) }
+
+// ReceiveDatagram waits for the next datagram from the peer, as kolotransport.Conn.ReceiveDatagram.
+func (c *Conn) ReceiveDatagram(ctx context.Context) ([]byte, error) { return c.tc.ReceiveDatagram(ctx) }
+
 // Context is canceled when the connection ends; its context.Cause is a kolo-transport error with no peer text.
 func (c *Conn) Context() context.Context { return c.tc.Context() }
 

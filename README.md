@@ -114,6 +114,7 @@ A real node loads its identity with `koloid.Load` and learns the key of the peer
 | `Conn.Stats` | The connection's kolo-transport statistics: round-trip times, bytes, losses, congestion window, controller (zero after it ends) |
 | `Conn.AllowWindowGrowth` | Mark the connection as trusted so its receive windows can grow (kolo-transport `WindowGrowth`); you decide who |
 | `Conn.OpenStream`, `AcceptStream`, `OpenUniStream`, `AcceptUniStream` | Streams, as in kolo-transport |
+| `Conn.SupportsDatagrams`, `SendDatagram`, `ReceiveDatagram` | QUIC datagrams, as in kolo-transport, when both ends set `Config.Transport.Datagrams` |
 | `Config` | `Transport`, `HandshakeTimeout` and `MaxPending` |
 
 Errors are sentinels for `errors.Is`: `ErrProtocol`, `ErrUnsupportedVersion`, `ErrUnexpectedPeer`, `ErrAuthentication`, `ErrTimeout`, `ErrClosed`, `ErrInvalidConfig` and `ErrInvalidArgument`. A failed handshake closes the connection with application error code 1.

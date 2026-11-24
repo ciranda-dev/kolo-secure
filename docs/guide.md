@@ -71,6 +71,10 @@ form included, is refused.
   congestion controller, path changes; see "Connection statistics" in the kolo-transport guide). It is the transport's view of the
   connection: the handshake and your streams count together, and kolo-secure adds nothing. It never blocks, is safe from any
   goroutine and is the zero value once the connection has ended.
+- `(*Conn).SupportsDatagrams()`, `SendDatagram(p)` and `ReceiveDatagram(ctx)` pass through to kolo-transport: QUIC datagrams
+  (RFC 9221) when both ends set `Config.Transport.Datagrams` (see "Datagrams" in the kolo-transport guide). A datagram the peer
+  sends before the kolo-secure handshake ends waits in kolo-transport's bounded queue and is read only from the returned `Conn`,
+  after the peer proved its key; it travels in the same QUIC connection, under the same keys.
 - `(*Conn).AllowWindowGrowth()` calls kolo-transport's
   `AllowWindowGrowth` on the connection, whether it came from `Accept`,
   `Dial`, `DialAny` or `(*Listener).Dial`, and decides nothing itself. Call
