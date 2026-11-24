@@ -56,7 +56,7 @@
   kolo-transport connection with its limits. Handshake messages are read
   with a length of at most two bytes and a body of at most 256 bytes, so
   a peer cannot make the reader allocate more.
-- Bytes the peer sent before its proof was checked, on other streams,
+- Bytes the peer sent before its proof was checked, on other streams or as datagrams,
   reach the application only after `Dial` or `Accept` returns, and then
   belong to the authenticated peer: only the TLS endpoint can send on the
   connection.
