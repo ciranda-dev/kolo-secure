@@ -182,6 +182,9 @@ func (l *Listener) Dial(ctx context.Context, addr netip.AddrPort, remote ed25519
 	return c, err
 }
 
+// PublicKey returns a copy of the public key the listener authenticates with.
+func (l *Listener) PublicKey() ed25519.PublicKey { return l.id.PublicKey() }
+
 // Addr returns the local address of the listener.
 func (l *Listener) Addr() net.Addr { return l.tl.Addr() }
 

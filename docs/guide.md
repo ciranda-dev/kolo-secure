@@ -41,7 +41,8 @@ form included, is refused.
   `0.0.0.0/8` or `240.0.0.0/4`, is `ErrInvalidArgument` of both
   packages. On a closed listener, or when `Close` runs during the call,
   it returns `ErrClosed`, unless its own context is done first.
-  `Addr()` is the local address. `Close()` stops
+  `Addr()` is the local address and `PublicKey()` a copy of the key the
+  listener authenticates with. `Close()` stops
   accepting, ends the handshakes in progress and closes every connection
   of the listener, including those already returned by `Accept`.
 - `Dial(ctx, addr, id, remote, cfg) (*Conn, error)` connects as `id` and

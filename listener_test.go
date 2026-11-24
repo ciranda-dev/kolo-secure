@@ -69,6 +69,24 @@ func TestNewListener(t *testing.T) {
 	}
 }
 
+// PublicKey is the identity the listener authenticates with, as a copy.
+func TestListenerPublicKey(t *testing.T) {
+	checkGoroutines(t)
+	lid := newIdentity(t)
+	for name, l := range map[string]*Listener{
+		"Listen":      listen(t, lid, nil),
+		"NewListener": wrap(t, rawListen(t), lid),
+	} {
+		if !bytes.Equal(l.PublicKey(), lid.PublicKey()) {
+			t.Fatalf("%s: PublicKey is not the identity's key", name)
+		}
+		l.PublicKey()[0] ^= 0xff
+		if !bytes.Equal(l.PublicKey(), lid.PublicKey()) {
+			t.Fatalf("%s: PublicKey shares memory", name)
+		}
+	}
+}
+
 func TestListenerDial(t *testing.T) {
 	checkGoroutines(t)
 	aid, bid := newIdentity(t), newIdentity(t)

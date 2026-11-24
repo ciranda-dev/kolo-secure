@@ -110,6 +110,7 @@ A real node loads its identity with `koloid.Load` and learns the key of the peer
 | `Dial` | Connect as an identity to a listener whose key you know |
 | `DialAny` | Connect and accept any listener key; `RemotePublicKey` tells which |
 | `Listener.Dial` | Dial from the listener's own socket, as hole punching needs |
+| `Listener.PublicKey` | The public key the listener authenticates with |
 | `Conn.RemotePublicKey` | The peer's kolo-id public key |
 | `Conn.Stats` | The connection's kolo-transport statistics: round-trip times, bytes, losses, congestion window, controller (zero after it ends) |
 | `Conn.AllowWindowGrowth` | Mark the connection as trusted so its receive windows can grow (kolo-transport `WindowGrowth`); you decide who |
